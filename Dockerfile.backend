@@ -10,10 +10,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application source code
 COPY backend ./backend
 COPY src ./src
-COPY ingestion.db ./ingestion.db
 
 # Ensure persistence directory exists
 RUN mkdir -p .chroma data
+
 
 EXPOSE 8000
 
