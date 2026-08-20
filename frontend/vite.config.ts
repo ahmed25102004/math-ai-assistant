@@ -43,8 +43,9 @@ export default defineConfig(({ mode }) => {
       ignoreOutdatedRequests: true,
     },
     server: {
-      host: "::",
+      host: "0.0.0.0",
       port: 8080,
+      allowedHosts: true,
     },
     plugins: [
       tanstackStart({
