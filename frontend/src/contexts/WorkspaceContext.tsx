@@ -113,7 +113,15 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   // Signed out: don't hit the API. Give the tree an empty store so the routes
   // below can render, and let a RoleGate redirect to /login.
-  if (ready && !user) {
+  if (!ready) {
+    return (
+      <div className="bg-background flex min-h-screen items-center justify-center">
+        <LoadingState label="Initializing session…" />
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <WorkspaceStore seedWorkspaces={[]} seedStore={{}}>
         {children}
@@ -129,20 +137,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  if (error || !data) {
-    return (
-      <div className="bg-background flex min-h-screen items-center justify-center px-6">
-        <ErrorState
-          title="Unable to load your workspaces"
-          message={error?.message ?? "Please try again."}
-          onRetry={() => void refetch()}
-        />
-      </div>
-    );
-  }
+  const workspaces = data?.workspaces ?? [];
+  const store = data?.store ?? {};
 
   return (
-    <WorkspaceStore seedWorkspaces={data.workspaces} seedStore={data.store}>
+    <WorkspaceStore seedWorkspaces={workspaces} seedStore={store}>
       {children}
     </WorkspaceStore>
   );
