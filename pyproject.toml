@@ -1,0 +1,62 @@
+[project]
+name = "flashcards-study-revision"
+version = "0.2.0"
+description = "Flashcards, Study Plan, Revision Tools, and Content Ingestion"
+requires-python = ">=3.10"
+
+# The source of truth for what this project needs. Derived by walking every
+# top-level import in src/ rather than from memory, so it matches what the code
+# actually loads. requirements.txt installs this file.
+dependencies = [
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "openai>=1.30.0",
+    "chromadb>=0.5.0",
+    "numpy>=1.26.0",
+    "streamlit>=1.30.0",
+    "pymupdf>=1.23.0",
+    "python-docx>=1.1.0",
+    "markdown>=3.5.0",
+    "fpdf2>=2.7.0",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.27.0",
+    "cryptography>=42.0.0",
+]
+
+[project.optional-dependencies]
+# OCR is opt-in (ENABLE_OCR) and additionally needs the Tesseract *binary*,
+# which pip cannot install - see docs/ocr-and-content-quality.md. The Python
+# side stays optional so a contributor who never touches scanned PDFs is not
+# asked to install it: src/ingestion/ocr.py imports both lazily and reports what
+# is missing instead of raising ImportError.
+ocr = [
+    "pytesseract>=0.3.10",
+    "Pillow>=10.0.0",
+]
+
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.6.0",
+]
+
+# LLM-judged quality checks (deepeval). Deliberately NOT part of `dev`:
+# requirements.txt installs `.[ocr,dev]`, so CI never sees this group and stays
+# credential-free by construction rather than by a workflow edit someone could
+# undo.
+#
+# Two things to know before installing it. deepeval hard-depends on
+# pytest-asyncio, pytest-xdist, pytest-repeat and pytest-rerunfailures, and
+# pytest auto-loads plugins - so installing this changes how every local test
+# run behaves. And its telemetry defaults to ON; tests/support/deepeval_judge.py
+# opts out at import time rather than relying on anyone reading this comment.
+eval = [
+    "deepeval>=4.1.5,<5.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "deepeval: LLM-judged quality check. Needs `pip install -e '.[eval]'`, gateway credentials, and RUN_DEEPEVAL_TESTS=true. Never runs in CI - the scores are non-deterministic and cost money per run.",
+]
