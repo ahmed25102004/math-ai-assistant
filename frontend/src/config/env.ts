@@ -17,19 +17,28 @@ function readBool(key: string, fallback: boolean): boolean {
   return raw === "true" || raw === "1";
 }
 
+function getDynamicApiUrl(): string {
+  const raw = (import.meta.env as Record<string, string | undefined>)["VITE_API_BASE_URL"];
+  if (raw && raw.length > 0 && !raw.includes("localhost")) return raw;
+  if (typeof window !== "undefined" && window.location.hostname) {
+    return `${window.location.protocol}//${window.location.hostname}:8000`;
+  }
+  return "http://localhost:8000";
+}
+
 export const env = {
   /** FastAPI base URL, e.g. https://api.example.com */
-  API_BASE_URL: readEnv("VITE_API_BASE_URL", "/api"),
+  API_BASE_URL: getDynamicApiUrl(),
   /** Supabase project URL (placeholder until Cloud/Supabase is enabled). */
   SUPABASE_URL: readEnv("VITE_SUPABASE_URL", ""),
   /** Supabase publishable/anon key (safe for the browser). */
   SUPABASE_ANON_KEY: readEnv("VITE_SUPABASE_ANON_KEY", ""),
   /** When true, the API layer resolves from `src/mock` instead of the network. */
-  ENABLE_MOCK: readBool("VITE_ENABLE_MOCK", true),
+  ENABLE_MOCK: readBool("VITE_ENABLE_MOCK", false),
   /** Default AI provider id used by the model selector. */
-  DEFAULT_MODEL: readEnv("VITE_DEFAULT_MODEL", "gemini"),
+  DEFAULT_MODEL: readEnv("VITE_DEFAULT_MODEL", "openrouter/free"),
 } as const;
 
 export type AppEnv = typeof env;
 
-export const isMockMode = () => env.ENABLE_MOCK || env.API_BASE_URL === "/api";
+export const isMockMode = () => env.ENABLE_MOCK;
