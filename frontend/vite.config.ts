@@ -46,6 +46,13 @@ export default defineConfig(({ mode }) => {
       host: "0.0.0.0",
       port: 8080,
       allowedHosts: true,
+      cors: true,
+    },
+    preview: {
+      host: "0.0.0.0",
+      port: 8080,
+      allowedHosts: true,
+      cors: true,
     },
     plugins: [
       tanstackStart({
@@ -64,7 +71,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       tsconfigPaths({ projects: ["./tsconfig.json"] }),
       nitro({
-        defaultPreset: "cloudflare-module",
+        defaultPreset: "node-server",
         output: {
           dir: "dist",
           serverDir: "dist/server",
