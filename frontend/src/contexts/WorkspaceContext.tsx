@@ -147,6 +147,15 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   );
 }
 
+const defaultFallbackWorkspace: Workspace = {
+  id: "default-math-ws",
+  name: "منصة مادة الرياضيات البحتة",
+  subject: "Pure Math",
+  description: "مساحة العمل الرئيسية للمنهج والدروس",
+  role: "admin",
+  created_at: new Date().toISOString(),
+};
+
 function WorkspaceStore({
   seedWorkspaces,
   seedStore,
@@ -156,9 +165,18 @@ function WorkspaceStore({
   seedStore: Record<string, WorkspaceData>;
   children: ReactNode;
 }) {
-  const [activeId, setActiveId] = useState<string | null>(seedWorkspaces[0]?.id ?? null);
-  const [workspaces, setWorkspaces] = useState<Workspace[]>(seedWorkspaces);
-  const [store, setStore] = useState<Record<string, WorkspaceData>>(seedStore);
+  const safeWorkspaces = useMemo(
+    () => (seedWorkspaces.length > 0 ? seedWorkspaces : [defaultFallbackWorkspace]),
+    [seedWorkspaces],
+  );
+  const safeStore = useMemo(
+    () => (Object.keys(seedStore).length > 0 ? seedStore : { "default-math-ws": emptyWorkspaceData() }),
+    [seedStore],
+  );
+
+  const [activeId, setActiveId] = useState<string | null>(safeWorkspaces[0].id);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>(safeWorkspaces);
+  const [store, setStore] = useState<Record<string, WorkspaceData>>(safeStore);
   const hydrated = useRef(false);
   const queryClient = useQueryClient();
 
@@ -202,8 +220,8 @@ function WorkspaceStore({
   // (window focus, reconnect, or invalidation after a mutation), propagate it
   // into state so workspaces deleted outside the app disappear immediately.
   useEffect(() => {
-    setWorkspaces(seedWorkspaces);
-  }, [seedWorkspaces]);
+    setWorkspaces(safeWorkspaces);
+  }, [safeWorkspaces]);
 
   // Persist everything so notes, chats and review history survive a reload.
   // The generation run log is excluded: since Phase 8 it lives in Supabase
