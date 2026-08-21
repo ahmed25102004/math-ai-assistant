@@ -1,4 +1,5 @@
 import { createClient, type SupportedStorage } from "@supabase/supabase-js";
+// @ts-ignore
 import WebSocket from "ws";
 import { env } from "@/config/env";
 import { STORAGE_KEYS } from "@/constants";

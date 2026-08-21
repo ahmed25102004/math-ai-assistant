@@ -228,6 +228,7 @@ function AdminDashboard() {
               </Link>
             ))}
           </div>
+        </div>
       </div>
 
       {/* Student Management Section for Math Assistant */}

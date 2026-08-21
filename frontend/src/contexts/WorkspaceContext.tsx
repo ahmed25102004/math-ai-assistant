@@ -152,8 +152,18 @@ const defaultFallbackWorkspace: Workspace = {
   name: "منصة مادة الرياضيات البحتة",
   subject: "Pure Math",
   description: "مساحة العمل الرئيسية للمنهج والدروس",
-  role: "admin",
-  created_at: new Date().toISOString(),
+  docs: 0,
+  assets: 0,
+  pendingReview: 0,
+  generations: 0,
+  reviewStatus: "Approved",
+  lastActive: "Just now",
+  accent: "primary",
+  owner: {
+    id: "admin",
+    name: "م. أحمد",
+    email: "admin@example.com",
+  },
 };
 
 function WorkspaceStore({
