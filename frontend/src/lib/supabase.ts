@@ -1,4 +1,5 @@
 import { createClient, type SupportedStorage } from "@supabase/supabase-js";
+import WebSocket from "ws";
 import { env } from "@/config/env";
 import { STORAGE_KEYS } from "@/constants";
 
@@ -74,5 +75,7 @@ export const supabase = createClient(validUrl, validKey, {
     detectSessionInUrl: typeof window !== "undefined",
     storage: supabaseStorage,
   },
-  ...(typeof window === "undefined" ? { realtime: { transport: null as any } } : {}),
+  realtime: {
+    transport: typeof window !== "undefined" ? undefined : (WebSocket as any),
+  },
 });
