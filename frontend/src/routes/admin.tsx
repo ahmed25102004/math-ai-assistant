@@ -12,6 +12,7 @@ import {
   Upload,
 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
+import { env } from "@/config/env";
 import { BackendStatus } from "@/components/app/BackendStatus";
 import { RoleGate } from "@/components/app/RoleGate";
 import { StatCard } from "@/components/app/StatCard";
@@ -251,7 +252,7 @@ function StudentAdminSection() {
   const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
   const [endDate, setEndDate] = useState(new Date(Date.now() + 90 * 86400000).toISOString().split("T")[0]);
 
-  const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+  const apiBase = env.API_BASE_URL;
   const token = localStorage.getItem("sensei_access_token") || "";
 
   const fetchStudents = async () => {

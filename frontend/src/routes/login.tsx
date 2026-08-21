@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DEMO_ACCOUNTS, homeForRole, useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { env } from "@/config/env";
 import { BrandMark } from "@/components/app/BrandMark";
 
 export const Route = createFileRoute("/login")({
@@ -59,7 +60,7 @@ function LoginPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+      const apiBase = env.API_BASE_URL;
       const resp = await fetch(`${apiBase}/auth/student-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
