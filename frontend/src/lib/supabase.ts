@@ -58,7 +58,16 @@ const supabaseStorage: SupportedStorage = {
   },
 };
 
-export const supabase = createClient(env.SUPABASE_URL, supabaseKey, {
+const validUrl =
+  env.SUPABASE_URL && env.SUPABASE_URL.startsWith("http")
+    ? env.SUPABASE_URL
+    : "https://retwsdbhkmxdtvoaaevy.supabase.co";
+const validKey =
+  supabaseKey && supabaseKey.length > 0
+    ? supabaseKey
+    : "sb_publishable_wa8namvqCW6LNcJD80-1SQ_CFGXP48b";
+
+export const supabase = createClient(validUrl, validKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,

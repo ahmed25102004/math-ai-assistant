@@ -23,16 +23,40 @@ let cachedSession: Session | null = null;
 const bootPromise = (async (): Promise<Session | null> => {
   try {
     const { data, error } = await supabase.auth.getSession();
-    if (error || !data.session) return null;
-    const session = await authApi.mapSession(data.session);
-    if (!session) return null;
-    cachedSession = session;
-    setAccessToken(session.access_token);
-    return session;
+    if (!error && data?.session) {
+      const session = await authApi.mapSession(data.session);
+      if (session) {
+        cachedSession = session;
+        setAccessToken(session.access_token);
+        return session;
+      }
+    }
   } catch {
-    /* Supabase not configured yet — app starts signed out. */
-    return null;
+    /* Supabase error fallback */
   }
+
+  if (typeof window !== "undefined") {
+    const localToken = localStorage.getItem("sensei_access_token");
+    const localUserStr = localStorage.getItem("sensei_user");
+    if (localToken && localUserStr) {
+      try {
+        const user = JSON.parse(localUserStr);
+        const session: Session = {
+          access_token: localToken,
+          refresh_token: localToken,
+          expires_at: Date.now() + 86400000,
+          user,
+        };
+        cachedSession = session;
+        setAccessToken(localToken);
+        return session;
+      } catch {
+        /* invalid JSON */
+      }
+    }
+  }
+
+  return null;
 })();
 
 // Keep the HTTP client's token in sync when Supabase refreshes the session in
